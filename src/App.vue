@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import Navigation from './components/Navigation.vue'
 </script>
 
 <template>
-  <RouterView />
+  <div>
+    <Navigation />
+    <RouterView />
+  </div>
 </template>
 
 <style lang="sass">
