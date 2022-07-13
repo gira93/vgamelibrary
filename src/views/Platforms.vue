@@ -1,33 +1,75 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import type { Ref } from 'vue'
+import { onMounted, reactive, ref, type Ref } from 'vue'
 import CreateEditPlatformModal from '@/components/CreateEditPlatformModal.vue'
-import { db } from '@/db'
-import type { Platform } from '@/db'
+import DeletePlatformModal from '@/components/DeletePlatformModal.vue'
+import { db, type Platform } from '@/db'
+import { computed } from 'vue'
 
-const state = reactive({
+const modals = reactive({
   isAddNewModalOpen: false,
-  isDeleteModalOpen: false,
-  isEditModalOpen: false
+  isDeleteModalOpen: false
 })
 const platforms: Ref<Platform[]> = ref([])
+const selectedPlatforms: Ref<Platform[]> = ref([])
+const tableSelection: Ref<number[]> = ref([])
+
+const isAllSelected = computed<boolean>(
+  () => tableSelection.value.length === platforms.value.length
+)
 
 const listAllPlatforms = async () => {
   platforms.value = await db.platforms.toArray()
 }
-listAllPlatforms()
-
 const handleCloseAddNewModal = (reloadList: boolean) => {
   if (reloadList) listAllPlatforms()
-  state.isAddNewModalOpen = false
+  selectedPlatforms.value = []
+  modals.isAddNewModalOpen = false
 }
+const handleOpenEditModal = (platform: Platform) => {
+  selectedPlatforms.value = [{ ...platform }]
+  modals.isAddNewModalOpen = true
+}
+const handleOpenDeleteModal = (platform: Platform) => {
+  selectedPlatforms.value = [{ ...platform }]
+  modals.isDeleteModalOpen = true
+}
+const handleOpenDeleteBulkModal = () => {
+  selectedPlatforms.value = platforms.value.filter(
+    (p) => p.id && tableSelection.value.includes(p.id)
+  )
+  modals.isDeleteModalOpen = true
+}
+const handleCloseDeleteModal = () => {
+  listAllPlatforms()
+  selectedPlatforms.value = []
+  tableSelection.value = []
+  modals.isDeleteModalOpen = false
+}
+const handleSelectAllTable = () => {
+  if (isAllSelected.value) {
+    tableSelection.value = []
+  } else {
+    tableSelection.value = platforms.value.map((p) => p.id).filter((p): p is number => !!p)
+  }
+}
+
+onMounted(() => {
+  listAllPlatforms()
+})
 </script>
 
 <template>
   <div class="container">
     <div class="columns is-multiline">
       <div class="column is-12 has-text-right">
-        <button class="button is-primary" @click="() => (state.isAddNewModalOpen = true)">
+        <button
+          class="button is-danger mr-3"
+          @click="handleOpenDeleteBulkModal"
+          :disabled="tableSelection.length === 0"
+        >
+          Delete selection
+        </button>
+        <button class="button is-primary" @click="() => (modals.isAddNewModalOpen = true)">
           Add new
         </button>
       </div>
@@ -35,16 +77,37 @@ const handleCloseAddNewModal = (reloadList: boolean) => {
         <table class="platforms-table table is-striped is-fullwidth">
           <thead>
             <tr>
+              <th class="platforms-table__header-selection">
+                <label class="checkbox">
+                  <input type="checkbox" :checked="isAllSelected" @change="handleSelectAllTable" />
+                </label>
+              </th>
               <th>Platform</th>
-              <th class="platforms-table__header-column has-text-right">Actions</th>
+              <th class="platforms-table__header-actions has-text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="platform in platforms" :key="platform.id">
+            <tr
+              v-for="platform in platforms"
+              :key="platform.id"
+              :class="{ 'is-selected': platform.id && tableSelection.includes(platform.id) }"
+            >
+              <td>
+                <label class="checkbox">
+                  <input type="checkbox" :value="platform.id" v-model="tableSelection" />
+                </label>
+              </td>
               <td>{{ platform.name }}</td>
               <td class="has-text-right">
-                <button class="button is-primary is-small">Edit</button>
-                <button class="button is-danger is-small">Delete</button>
+                <button
+                  class="button is-primary is-small mr-3"
+                  @click="handleOpenEditModal(platform)"
+                >
+                  Edit
+                </button>
+                <button class="button is-danger is-small" @click="handleOpenDeleteModal(platform)">
+                  Delete
+                </button>
               </td>
             </tr>
           </tbody>
@@ -53,20 +116,28 @@ const handleCloseAddNewModal = (reloadList: boolean) => {
     </div>
   </div>
 
-  <!-- AddNewModal -->
   <CreateEditPlatformModal
-    v-if="state.isAddNewModalOpen"
-    :title="'Add new platform'"
+    v-if="modals.isAddNewModalOpen"
+    :platformEdit="selectedPlatforms[0]"
     @closePlatformModal="handleCloseAddNewModal"
     @savePlatformModal="handleCloseAddNewModal(true)"
+  />
+  <DeletePlatformModal
+    v-if="modals.isDeleteModalOpen"
+    :selectedPlatforms="selectedPlatforms"
+    @closeDeletePlatformModal="handleCloseDeleteModal"
   />
 </template>
 
 <style lang="scss">
 .platforms-table {
-  &__header-column {
+  &__header-actions {
     width: 10%;
-    min-width: 140px;
+    min-width: 160px;
+  }
+  &__header-selection {
+    width: 2%;
+    min-width: 40px;
   }
 }
 </style>
