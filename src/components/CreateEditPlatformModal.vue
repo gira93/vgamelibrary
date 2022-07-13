@@ -25,9 +25,10 @@ const savePlatformToDb = async () => {
 <template>
   <Modal
     :title="'Add new platform'"
-    :showButtons="true"
-    @closeModal="$emit('closePlatformModal')"
-    @saveModal="savePlatformToDb"
+    :confirmText="'Save'"
+    :cancelText="'Cancel'"
+    @cancelModal="$emit('closePlatformModal')"
+    @confirmModal="savePlatformToDb"
   >
     <div class="field">
       <label class="label">Platform name</label>

@@ -3,8 +3,11 @@ import { defineProps } from 'vue'
 
 defineProps<{
   title: string
-  showButtons?: boolean
+  cancelText?: string
+  confirmText?: string
 }>()
+
+defineEmits(['cancelModal', 'confirmModal'])
 </script>
 
 <template>
@@ -13,14 +16,14 @@ defineProps<{
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">{{ title }}</p>
-        <button class="delete" aria-label="close" @click="$emit('closeModal')"></button>
+        <button class="delete" aria-label="close" @click="$emit('cancelModal')"></button>
       </header>
       <section class="modal-card-body">
         <slot></slot>
       </section>
-      <footer class="modal-card-foot" v-if="showButtons">
-        <button class="button is-success" @click="$emit('saveModal')">Save</button>
-        <button class="button" @click="$emit('closeModal')">Cancel</button>
+      <footer class="modal-card-foot" v-if="cancelText && confirmText">
+        <button class="button is-success" @click="$emit('confirmModal')">{{ confirmText }}</button>
+        <button class="button" @click="$emit('cancelModal')">{{ cancelText }}</button>
       </footer>
     </div>
   </div>
