@@ -12,6 +12,10 @@ export interface Game {
   platformId: number
 }
 
+export interface GameWithAssociation extends Game {
+  platform?: Platform
+}
+
 export class LocalDB extends Dexie {
   platforms!: Table<Platform>
   games!: Table<Game>

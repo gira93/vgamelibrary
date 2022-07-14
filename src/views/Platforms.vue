@@ -13,9 +13,10 @@ const platforms: Ref<Platform[]> = ref([])
 const selectedPlatforms: Ref<Platform[]> = ref([])
 const tableSelection: Ref<number[]> = ref([])
 
-const isAllSelected = computed<boolean>(
-  () => tableSelection.value.length === platforms.value.length
-)
+const isAllSelected = computed<boolean>(() => {
+  if (platforms.value.length === 0) return false
+  return tableSelection.value.length === platforms.value.length
+})
 
 const listAllPlatforms = async () => {
   platforms.value = await db.platforms.toArray()
