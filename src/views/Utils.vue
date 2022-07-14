@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import Modal from '@/components/Modal.vue'
-import { db, type Game } from '@/db'
+import { db } from '@/db'
+import { GameRepository } from '@/repositories/GameRepository'
 import { Csv } from '@/services/Csv'
 import { ref, type Ref } from 'vue'
 
 const csv = new Csv()
+const gameRepository = new GameRepository()
 
 const isPurgeModalOpen: Ref<boolean> = ref(false)
 
@@ -15,13 +17,7 @@ const purgeDatabase = async () => {
 }
 
 const exportCsv = async () => {
-  const initialGames: Game[] = await db.games.toArray()
-  const games = await Promise.all(
-    initialGames.map(async (game) => ({
-      ...game,
-      platform: await db.platforms.get(game.platformId)
-    }))
-  )
+  const games = await gameRepository.index(true)
   csv.downloadGamesCsv(games)
 }
 </script>

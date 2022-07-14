@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { db, type Game, type Platform } from '@/db'
+import type { Game, Platform } from '@/db'
 import Modal from './Modal.vue'
 import { onMounted, ref, type Ref } from 'vue'
+import { GameRepository } from '@/repositories/GameRepository'
+import { PlatformRepository } from '@/repositories/PlatformRepository'
+
+const gameRepository = new GameRepository()
+const platformRepository = new PlatformRepository()
 
 const emit = defineEmits(['closeGameModal', 'saveGameModal'])
 
@@ -17,9 +22,9 @@ const saveGameToDb = async () => {
   if (name !== '') {
     try {
       if (props.gameEdit && props.gameEdit.id) {
-        await db.games.update(props.gameEdit.id, { name, platformId })
+        await gameRepository.update(props.gameEdit.id, { name, platformId })
       } else {
-        await db.games.add({ name, platformId })
+        await gameRepository.create({ name, platformId })
       }
       emit('saveGameModal')
     } catch (error) {
@@ -29,7 +34,7 @@ const saveGameToDb = async () => {
 }
 
 const listAllPlatforms = async () => {
-  platforms.value = await db.platforms.toArray()
+  platforms.value = await platformRepository.index()
 }
 
 onMounted(async () => {

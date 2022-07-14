@@ -2,8 +2,11 @@
 import { onMounted, reactive, ref, type Ref } from 'vue'
 import CreateEditGameModal from '@/components/CreateEditGameModal.vue'
 import DeleteGameModal from '@/components/DeleteGameModal.vue'
-import { db, type Game, type GameWithAssociation } from '@/db'
+import type { Game, GameWithAssociation } from '@/db'
 import { computed } from 'vue'
+import { GameRepository } from '@/repositories/GameRepository'
+
+const gameRepository = new GameRepository()
 
 const modals = reactive({
   isAddNewModalOpen: false,
@@ -19,13 +22,7 @@ const isAllSelected = computed<boolean>(() => {
 })
 
 const listAllGames = async () => {
-  const initialGames: Game[] = await db.games.toArray()
-  games.value = await Promise.all(
-    initialGames.map(async (game) => ({
-      ...game,
-      platform: await db.platforms.get(game.platformId)
-    }))
-  )
+  games.value = await gameRepository.index(true)
 }
 const handleCloseAddNewModal = (reloadList: boolean) => {
   if (reloadList) listAllGames()

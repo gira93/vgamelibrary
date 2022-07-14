@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { db, type Platform } from '@/db'
+import type { Platform } from '@/db'
 import Modal from './Modal.vue'
 import { onMounted, ref, type Ref } from 'vue'
+import { PlatformRepository } from '@/repositories/PlatformRepository'
+
+const platformRepository = new PlatformRepository()
 
 const emit = defineEmits(['closePlatformModal', 'savePlatformModal'])
 
@@ -16,9 +19,9 @@ const savePlatformToDb = async () => {
   if (name !== '') {
     try {
       if (props.platformEdit && props.platformEdit.id) {
-        await db.platforms.update(props.platformEdit.id, { name })
+        await platformRepository.update(props.platformEdit.id, { name })
       } else {
-        await db.platforms.add({ name })
+        await platformRepository.create({ name })
       }
       emit('savePlatformModal')
     } catch (error) {

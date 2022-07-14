@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { db, type Game } from '@/db'
+import type { Game } from '@/db'
+import { GameRepository } from '@/repositories/GameRepository'
 import { computed } from 'vue'
 import Modal from './Modal.vue'
+
+const gameRepository = new GameRepository()
 
 const emits = defineEmits(['closeDeleteGameModal'])
 
@@ -13,7 +16,7 @@ const isSingleDelete = computed<boolean>(() => props.selectedGames.length <= 1)
 
 const deleteGameFromDb = async () => {
   const gameIds = props.selectedGames.map((g) => g.id).filter((g): g is number => !!g)
-  await db.games.bulkDelete(gameIds)
+  await gameRepository.delete(gameIds)
   emits('closeDeleteGameModal')
 }
 </script>

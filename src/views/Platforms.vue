@@ -2,8 +2,11 @@
 import { onMounted, reactive, ref, type Ref } from 'vue'
 import CreateEditPlatformModal from '@/components/CreateEditPlatformModal.vue'
 import DeletePlatformModal from '@/components/DeletePlatformModal.vue'
-import { db, type Platform } from '@/db'
+import type { Platform } from '@/db'
 import { computed } from 'vue'
+import { PlatformRepository } from '@/repositories/PlatformRepository'
+
+const platformRepository = new PlatformRepository()
 
 const modals = reactive({
   isAddNewModalOpen: false,
@@ -19,7 +22,7 @@ const isAllSelected = computed<boolean>(() => {
 })
 
 const listAllPlatforms = async () => {
-  platforms.value = await db.platforms.toArray()
+  platforms.value = await platformRepository.index()
 }
 const handleCloseAddNewModal = (reloadList: boolean) => {
   if (reloadList) listAllPlatforms()

@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { db, type Platform } from '@/db'
+import type { Platform } from '@/db'
+import { PlatformRepository } from '@/repositories/PlatformRepository'
 import { computed } from 'vue'
 import Modal from './Modal.vue'
+
+const platformRepository = new PlatformRepository()
 
 const emits = defineEmits(['closeDeletePlatformModal'])
 
@@ -13,7 +16,7 @@ const isSingleDelete = computed<boolean>(() => props.selectedPlatforms.length <=
 
 const deletePlatformFromDb = async () => {
   const platformIds = props.selectedPlatforms.map((p) => p.id).filter((p): p is number => !!p)
-  await db.platforms.bulkDelete(platformIds)
+  await platformRepository.delete(platformIds)
   emits('closeDeletePlatformModal')
 }
 </script>
