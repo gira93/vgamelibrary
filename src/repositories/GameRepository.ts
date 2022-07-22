@@ -20,6 +20,9 @@ export class GameRepository {
   create(game: Game): Promise<IndexableType> {
     return db.games.add(game)
   }
+  bulkCreate(games: Game[]): Promise<IndexableType> {
+    return db.games.bulkAdd(games)
+  }
   update(id: IndexableType, game: Game): Promise<number> {
     return db.games.update(id, game)
   }

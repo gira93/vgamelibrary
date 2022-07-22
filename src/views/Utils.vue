@@ -20,6 +20,23 @@ const exportCsv = async () => {
   const games = await gameRepository.index(true)
   csv.downloadGamesCsv(games)
 }
+
+const readCsvFromFile = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = async () => {
+      try {
+        await csv.importGamesCsv(reader.result as string)
+        window.alert('Games imported successfully')
+      } catch (error) {
+        window.alert(error)
+      }
+    }
+    reader.readAsText(file)
+  }
+}
 </script>
 
 <template>
@@ -27,7 +44,20 @@ const exportCsv = async () => {
     <h1 class="title">Utilities</h1>
     <div class="utilities-buttons">
       <button class="button is-primary mr-3" @click="exportCsv">Export CSV</button>
-      <button class="button is-primary">Import CSV</button>
+      <div class="file is-primary is-inline-block">
+        <label class="file-label">
+          <input
+            class="file-input"
+            type="file"
+            name="resume"
+            accept=".csv"
+            @change="readCsvFromFile"
+          />
+          <span class="file-cta">
+            <span class="file-label">Import CSV</span>
+          </span>
+        </label>
+      </div>
     </div>
     <div class="destructive-buttons mt-6">
       <button class="button is-danger" @click="() => (isPurgeModalOpen = true)">DELETE ALL</button>
