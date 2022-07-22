@@ -9,6 +9,7 @@ const csv = new Csv()
 const gameRepository = new GameRepository()
 
 const isPurgeModalOpen: Ref<boolean> = ref(false)
+const isImportLoading: Ref<boolean> = ref(false)
 
 const purgeDatabase = async () => {
   await db.delete()
@@ -28,9 +29,12 @@ const readCsvFromFile = (event: Event) => {
     const reader = new FileReader()
     reader.onload = async () => {
       try {
+        isImportLoading.value = true
         await csv.importGamesCsv(reader.result as string)
+        isImportLoading.value = false
         window.alert('Games imported successfully')
       } catch (error) {
+        isImportLoading.value = false
         window.alert(error)
       }
     }
@@ -44,7 +48,7 @@ const readCsvFromFile = (event: Event) => {
     <h1 class="title">Utilities</h1>
     <div class="utilities-buttons">
       <button class="button is-primary mr-3" @click="exportCsv">Export CSV</button>
-      <div class="file is-primary is-inline-block">
+      <div v-if="!isImportLoading" class="file is-primary is-inline-block">
         <label class="file-label">
           <input
             class="file-input"
@@ -58,6 +62,7 @@ const readCsvFromFile = (event: Event) => {
           </span>
         </label>
       </div>
+      <button v-if="isImportLoading" class="button is-primary is-loading is-disabled"></button>
     </div>
     <div class="destructive-buttons mt-6">
       <button class="button is-danger" @click="() => (isPurgeModalOpen = true)">DELETE ALL</button>

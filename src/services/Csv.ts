@@ -31,7 +31,6 @@ const saveGamesToDb = async (games: Partial<GameWithAssociation>[]) => {
         let platform = null
         if (game.platform?.name) {
           platform = await platformRepository.getByName(game.platform?.name)
-          console.log(platform)
         }
         if (game.name && platform?.id) {
           return await gameRepository.create({
@@ -62,7 +61,7 @@ export class Csv {
   }
 
   importGamesCsv(csv: string): Promise<boolean> {
-    const rows = csv.slice(csv.indexOf('\n') + 1).split('\n')
+    const rows = csv.slice(csv.indexOf('\n') + 1).split(/\r?\n/)
     const games: Partial<GameWithAssociation>[] = rows.map((row) => {
       const values = row.split('","')
       return {
