@@ -2,9 +2,17 @@ import { db, type Game, type GameWithAssociation } from '@/db'
 import type { IndexableType } from 'dexie'
 
 export class GameRepository {
-  async index(includeAssociations = false): Promise<Game[] | GameWithAssociation[]> {
+  async index(
+    includeAssociations = false,
+    where: { platformId: number } | null = null
+  ): Promise<Game[] | GameWithAssociation[]> {
     if (includeAssociations) {
-      const initialGames: Game[] = await db.games.toArray()
+      let initialGames: Game[]
+      if (where) {
+        initialGames = await db.games.where(where).sortBy('name')
+      } else {
+        initialGames = await db.games.orderBy('name').toArray()
+      }
       return Promise.all(
         initialGames.map(async (game) => ({
           ...game,
