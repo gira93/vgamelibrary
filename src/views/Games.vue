@@ -2,23 +2,29 @@
 import { onMounted, reactive, ref, type Ref } from 'vue'
 import CreateEditGameModal from '@/components/CreateEditGameModal.vue'
 import DeleteGameModal from '@/components/DeleteGameModal.vue'
-import type { Game, GameWithAssociation, Platform } from '@/db'
+import GamesFilters from '@/components/GamesFilters.vue'
+import type { Game, GameWithAssociation } from '@/db'
 import { computed } from 'vue'
 import { GameRepository } from '@/repositories/GameRepository'
-import { PlatformRepository } from '@/repositories/PlatformRepository'
+
+interface Filters {
+  platformId: number | null
+  gameName: string
+}
 
 const gameRepository = new GameRepository()
-const platformRepository = new PlatformRepository()
 
 const modals = reactive({
   isAddNewModalOpen: false,
   isDeleteModalOpen: false
 })
 const games: Ref<GameWithAssociation[]> = ref([])
-const platforms: Ref<Platform[]> = ref([])
 const selectedGames: Ref<Game[]> = ref([])
 const tableSelection: Ref<number[]> = ref([])
-const platformFilter: Ref<number | null> = ref(null)
+const filters: Filters = reactive({
+  platformId: null,
+  gameName: ''
+})
 
 const isAllSelected = computed<boolean>(() => {
   if (games.value.length === 0) return false
@@ -26,13 +32,15 @@ const isAllSelected = computed<boolean>(() => {
 })
 
 const listAllGames = async () => {
-  games.value = await gameRepository.index(
+  const initialGames = await gameRepository.index(
     true,
-    platformFilter.value ? { platformId: platformFilter.value } : null
+    filters.platformId ? { platformId: filters.platformId } : null
   )
-}
-const getAllPlatforms = async () => {
-  platforms.value = await platformRepository.index()
+  if (filters.gameName !== '') {
+    games.value = initialGames.filter((g) => new RegExp(filters.gameName, 'i').test(g.name))
+  } else {
+    games.value = initialGames
+  }
 }
 const handleCloseAddNewModal = (reloadList: boolean) => {
   if (reloadList) listAllGames()
@@ -67,7 +75,6 @@ const handleSelectAllTable = () => {
 
 onMounted(() => {
   listAllGames()
-  getAllPlatforms()
 })
 </script>
 
@@ -86,19 +93,13 @@ onMounted(() => {
           Add new
         </button>
       </div>
-      <div class="column is-12">
-        <div class="field">
-          <label class="label">Platform</label>
-          <div class="select">
-            <select v-model="platformFilter" @change="listAllGames">
-              <option :value="null">None</option>
-              <option v-for="platform in platforms" :key="platform.id" :value="platform.id">
-                {{ platform.name }}
-              </option>
-            </select>
-          </div>
-        </div>
-      </div>
+
+      <GamesFilters
+        v-model:platformId="filters.platformId"
+        v-model:gameName="filters.gameName"
+        @updateTrigger="listAllGames"
+      />
+
       <div class="column is-12">
         <table class="games-table table is-striped is-fullwidth">
           <thead>

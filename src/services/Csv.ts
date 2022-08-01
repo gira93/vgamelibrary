@@ -6,7 +6,7 @@ const generateGamesCsv = (games: GameWithAssociation[]): string => {
   const header = ['name', 'platform']
   const rows = games.map((game) => [`"${game.name}"`, `"${game.platform?.name}"`])
 
-  return 'data:text/csv;charset=utf-8,' + header + '\n' + rows.map((e) => e.join(',')).join('\n')
+  return header + '\n' + rows.map((e) => e.join(',')).join('\n')
 }
 
 const extractPlatformsFromGames = (games: Partial<GameWithAssociation>[]) => {
@@ -51,9 +51,9 @@ export class Csv {
   downloadGamesCsv(games: GameWithAssociation[]) {
     const csv = generateGamesCsv(games)
 
-    const encodedUri = encodeURI(csv)
+    const blob = new Blob([csv], { type: 'text/csv' })
     const link = document.createElement('a')
-    link.setAttribute('href', encodedUri)
+    link.setAttribute('href', window.URL.createObjectURL(blob))
     link.setAttribute('download', 'games.csv')
     document.body.appendChild(link)
 
