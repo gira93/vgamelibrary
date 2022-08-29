@@ -3,9 +3,11 @@ import Modal from '@/components/Modal.vue'
 import { db } from '@/db'
 import { GameRepository } from '@/repositories/GameRepository'
 import { Csv } from '@/services/Csv'
+import { ExportImport } from '@/services/ExportImport'
 import { ref, type Ref } from 'vue'
 
 const csv = new Csv()
+const exportImport = new ExportImport()
 const gameRepository = new GameRepository()
 
 const isPurgeModalOpen: Ref<boolean> = ref(false)
@@ -41,11 +43,58 @@ const readCsvFromFile = (event: Event) => {
     reader.readAsText(file)
   }
 }
+
+const saveJson = async () => {
+  const blob = await exportImport.exportJson()
+  const link = document.createElement('a')
+  link.setAttribute('href', window.URL.createObjectURL(blob))
+  const today = new Date().toISOString().split('T')[0]
+  const fileName = `vgamelibrary-${today}.json`
+  link.setAttribute('download', fileName)
+  document.body.appendChild(link)
+
+  link.click()
+}
+
+const readJson = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.readAsArrayBuffer(file)
+    reader.onload = async () => {
+      try {
+        isImportLoading.value = true
+        // eslint-disable-next-line no-undef
+        const blob = new Blob([reader.result as BlobPart])
+        await exportImport.importJson(blob)
+        isImportLoading.value = false
+        window.alert('DB imported successfully')
+      } catch (error) {
+        isImportLoading.value = false
+        window.alert(error)
+      }
+    }
+  }
+}
 </script>
 
 <template>
   <div class="container">
     <h1 class="title">Utilities</h1>
+    <div class="utilities-buttons mb-3">
+      <button class="button is-primary mr-3" @click="saveJson">Export JSON</button>
+      <div v-if="!isImportLoading" class="file is-primary is-inline-block">
+        <label class="file-label">
+          <input class="file-input" type="file" name="resume" accept=".json" @change="readJson" />
+          <span class="file-cta">
+            <span class="file-label">Import JSON</span>
+          </span>
+        </label>
+      </div>
+      <button v-if="isImportLoading" class="button is-primary is-loading is-disabled"></button>
+    </div>
+
     <div class="utilities-buttons">
       <button class="button is-primary mr-3" @click="exportCsv">Export CSV</button>
       <div v-if="!isImportLoading" class="file is-primary is-inline-block">
@@ -64,6 +113,7 @@ const readCsvFromFile = (event: Event) => {
       </div>
       <button v-if="isImportLoading" class="button is-primary is-loading is-disabled"></button>
     </div>
+
     <div class="destructive-buttons mt-6">
       <button class="button is-danger" @click="() => (isPurgeModalOpen = true)">DELETE ALL</button>
     </div>
