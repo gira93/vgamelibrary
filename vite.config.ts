@@ -16,9 +16,9 @@ export default defineConfig({
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'My Awesome App',
-        short_name: 'MyApp',
-        description: 'My Awesome App description',
+        name: 'VGameLibrary',
+        short_name: 'VGameLibrary',
+        description: 'VueJS Game Library PWA',
         theme_color: '#1f2424',
         icons: [
           {
