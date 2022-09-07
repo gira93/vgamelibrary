@@ -11,5 +11,5 @@ import Navigation from './components/Navigation.vue'
 </template>
 
 <style lang="sass">
-@import 'bulma/bulma.sass'
+@import '@/assets/styles/main.scss'
 </style>

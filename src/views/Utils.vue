@@ -80,8 +80,8 @@ const readJson = async (event: Event) => {
 </script>
 
 <template>
-  <div class="container">
-    <h1 class="title">Utilities</h1>
+  <div class="container is-padded-mobile">
+    <h2 class="title is-3">Export / Import</h2>
     <div class="utilities-buttons mb-3">
       <button class="button is-primary mr-3" @click="saveJson">Export JSON</button>
       <div v-if="!isImportLoading" class="file is-primary is-inline-block">
@@ -114,7 +114,8 @@ const readJson = async (event: Event) => {
       <button v-if="isImportLoading" class="button is-primary is-loading is-disabled"></button>
     </div>
 
-    <div class="destructive-buttons mt-6">
+    <h2 class="title is-3 mt-5">Destructive zone</h2>
+    <div class="destructive-buttons">
       <button class="button is-danger" @click="() => (isPurgeModalOpen = true)">DELETE ALL</button>
     </div>
   </div>

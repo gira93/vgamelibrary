@@ -79,7 +79,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container is-padded-mobile">
     <div class="columns is-multiline">
       <div class="column is-12 has-text-right">
         <button
@@ -101,17 +101,17 @@ onMounted(() => {
       />
 
       <div class="column is-12">
-        <table class="games-table table is-striped is-fullwidth">
+        <table class="custom-table table is-striped is-fullwidth">
           <thead>
             <tr>
-              <th class="games-table__header-selection">
+              <th class="custom-table__header-selection">
                 <label class="checkbox">
                   <input type="checkbox" :checked="isAllSelected" @change="handleSelectAllTable" />
                 </label>
               </th>
               <th>Game</th>
-              <th>Platform</th>
-              <th class="games-table__header-actions has-text-right">Actions</th>
+              <th class="is-hidden-touch">Platform</th>
+              <th class="custom-table__header-actions has-text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -125,14 +125,39 @@ onMounted(() => {
                   <input type="checkbox" :value="game.id" v-model="tableSelection" />
                 </label>
               </td>
-              <td>{{ game.name }}</td>
-              <td>{{ game.platform?.name }}</td>
+              <td>
+                <span class="is-block">{{ game.name }}</span>
+                <span class="is-hidden-desktop is-italic">{{ game.platform?.name }}</span>
+              </td>
+              <td class="is-hidden-touch">{{ game.platform?.name }}</td>
               <td class="has-text-right">
-                <button class="button is-primary is-small mr-3" @click="handleOpenEditModal(game)">
+                <button
+                  class="button is-primary is-small is-hidden-touch mr-3"
+                  @click="handleOpenEditModal(game)"
+                >
                   Edit
                 </button>
-                <button class="button is-danger is-small" @click="handleOpenDeleteModal(game)">
+                <button
+                  class="button is-primary is-small mr-3 is-hidden-desktop"
+                  @click="handleOpenEditModal(game)"
+                >
+                  <span class="icon is-small">
+                    <font-awesome-icon icon="fa-regular fa-pen-to-square" />
+                  </span>
+                </button>
+                <button
+                  class="button is-danger is-small is-hidden-touch"
+                  @click="handleOpenDeleteModal(game)"
+                >
                   Delete
+                </button>
+                <button
+                  class="button is-danger is-small is-hidden-desktop"
+                  @click="handleOpenDeleteModal(game)"
+                >
+                  <span class="icon is-small">
+                    <font-awesome-icon icon="fa-regular fa-trash-can" />
+                  </span>
                 </button>
               </td>
             </tr>
@@ -154,16 +179,3 @@ onMounted(() => {
     @closeDeleteGameModal="handleCloseDeleteModal"
   />
 </template>
-
-<style lang="scss">
-.games-table {
-  &__header-actions {
-    width: 10%;
-    min-width: 160px;
-  }
-  &__header-selection {
-    width: 2%;
-    min-width: 40px;
-  }
-}
-</style>

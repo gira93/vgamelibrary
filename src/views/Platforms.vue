@@ -63,7 +63,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container is-padded-mobile">
     <div class="columns is-multiline">
       <div class="column is-12 has-text-right">
         <button
@@ -78,16 +78,16 @@ onMounted(() => {
         </button>
       </div>
       <div class="column is-12">
-        <table class="platforms-table table is-striped is-fullwidth">
+        <table class="custom-table table is-striped is-fullwidth">
           <thead>
             <tr>
-              <th class="platforms-table__header-selection">
+              <th class="custom-table__header-selection">
                 <label class="checkbox">
                   <input type="checkbox" :checked="isAllSelected" @change="handleSelectAllTable" />
                 </label>
               </th>
               <th>Platform</th>
-              <th class="platforms-table__header-actions has-text-right">Actions</th>
+              <th class="custom-table__header-actions has-text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -104,13 +104,32 @@ onMounted(() => {
               <td>{{ platform.name }}</td>
               <td class="has-text-right">
                 <button
-                  class="button is-primary is-small mr-3"
+                  class="button is-primary is-small is-hidden-touch mr-3"
                   @click="handleOpenEditModal(platform)"
                 >
                   Edit
                 </button>
-                <button class="button is-danger is-small" @click="handleOpenDeleteModal(platform)">
+                <button
+                  class="button is-primary is-small mr-3 is-hidden-desktop"
+                  @click="handleOpenEditModal(platform)"
+                >
+                  <span class="icon is-small">
+                    <font-awesome-icon icon="fa-regular fa-pen-to-square" />
+                  </span>
+                </button>
+                <button
+                  class="button is-danger is-small is-hidden-touch"
+                  @click="handleOpenDeleteModal(platform)"
+                >
                   Delete
+                </button>
+                <button
+                  class="button is-danger is-small is-hidden-desktop"
+                  @click="handleOpenDeleteModal(platform)"
+                >
+                  <span class="icon is-small">
+                    <font-awesome-icon icon="fa-regular fa-trash-can" />
+                  </span>
                 </button>
               </td>
             </tr>
@@ -132,16 +151,3 @@ onMounted(() => {
     @closeDeletePlatformModal="handleCloseDeleteModal"
   />
 </template>
-
-<style lang="scss">
-.platforms-table {
-  &__header-actions {
-    width: 10%;
-    min-width: 160px;
-  }
-  &__header-selection {
-    width: 2%;
-    min-width: 40px;
-  }
-}
-</style>
