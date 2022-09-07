@@ -77,6 +77,9 @@ onMounted(() => {
           Add new
         </button>
       </div>
+
+      <div class="column is-12">Total items: {{ platforms.length }}</div>
+
       <div class="column is-12">
         <table class="custom-table table is-striped is-fullwidth">
           <thead>

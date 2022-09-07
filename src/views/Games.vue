@@ -100,6 +100,8 @@ onMounted(() => {
         @updateTrigger="listAllGames"
       />
 
+      <div class="column is-12">Total items: {{ games.length }}</div>
+
       <div class="column is-12">
         <table class="custom-table table is-striped is-fullwidth">
           <thead>

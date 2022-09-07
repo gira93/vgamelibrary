@@ -2,7 +2,7 @@
 import { RouterLink } from 'vue-router'
 
 const navItems = [
-  { name: 'dashboard', label: 'Dashboard' },
+  // { name: 'dashboard', label: 'Dashboard' },
   { name: 'games', label: 'Games' },
   { name: 'platforms', label: 'Platforms' },
   { name: 'utils', label: 'Utils' }

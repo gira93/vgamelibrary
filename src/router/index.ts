@@ -5,8 +5,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'dashboard',
-      component: () => import('../views/Dashboard.vue')
+      redirect: 'games'
     },
     {
       path: '/platforms',
