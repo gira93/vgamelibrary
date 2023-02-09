@@ -1,5 +1,7 @@
 import { db } from '@/db'
 import type Dexie from 'dexie'
+// Needed because missing type declaration for plugin
+// @ts-ignore
 import { importDB, exportDB } from 'dexie-export-import'
 
 export class ExportImport {
