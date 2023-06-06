@@ -26,6 +26,9 @@ const filters: Filters = reactive({
   gameName: ''
 })
 
+const isAnyFilterPopulated = computed<boolean>(() => {
+  return filters.platformId !== null || filters.gameName !== ''
+})
 const isAllSelected = computed<boolean>(() => {
   if (games.value.length === 0) return false
   return tableSelection.value.length === games.value.length
@@ -102,7 +105,7 @@ onMounted(() => {
 
       <div class="column is-12">Total items: {{ games.length }}</div>
 
-      <div class="column is-12">
+      <div v-if="isAnyFilterPopulated" class="column is-12">
         <table class="custom-table table is-striped is-fullwidth">
           <thead>
             <tr>
@@ -166,6 +169,8 @@ onMounted(() => {
           </tbody>
         </table>
       </div>
+
+      <div v-if="!isAnyFilterPopulated" class="column is-12">Use filters to search for games</div>
     </div>
   </div>
 
