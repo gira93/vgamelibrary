@@ -9,7 +9,7 @@ const platformRepository = new PlatformRepository()
 const emit = defineEmits(['closePlatformModal', 'savePlatformModal'])
 
 const props = defineProps<{
-  platformEdit: Platform | null
+  platformEdit: Platform | null | undefined
 }>()
 
 const platform: Ref<Platform> = ref({ name: '' })

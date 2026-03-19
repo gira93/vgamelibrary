@@ -11,7 +11,7 @@ const platformRepository = new PlatformRepository()
 const emit = defineEmits(['closeGameModal', 'saveGameModal'])
 
 const props = defineProps<{
-  gameEdit: Game | null
+  gameEdit: Game | null | undefined
 }>()
 
 const game: Ref<Game> = ref({ name: '', platformId: 0 })
